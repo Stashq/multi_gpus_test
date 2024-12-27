@@ -3,6 +3,8 @@ from typing import Literal
 import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import CSVLogger
+from pytorch_lightning.strategies.deepspeed import DeepSpeedStrategy
+from pytorch_lightning.strategies.strategy import Strategy
 
 from src.data_modules.vector_data import VectorDataModule
 from src.models import MLPModel
@@ -46,7 +48,7 @@ def train_mlp(
     num_nodes: int,
     devices: int = 1,
     accelerator: str = "cpu",
-    strategy: str | None = None,
+    strategy: Strategy | str | None = None,
 ) -> None:
     dm = VectorDataModule(
         vector_len=vector_len,
@@ -69,51 +71,75 @@ def train_mlp(
     )
 
 
-def _calculate_hidden_dim(
-    memory_gb: int | float, input_len: int, optim: Literal["adam", "sgd"]
+def _calculate_n_params(
+    memory_gb: int | float, optim: Literal["adam", "sgd"]
 ) -> int:
+    """Calculates number of parameters that fits into memory.
+
+    Parameters
+    ----------
+    memory_gb : int | float
+        Memory in gigabytes.
+    optim : Literal["adam", "sgd"]
+        Optimizer type. Allowed only adam or sgd.
+
+    Returns
+    -------
+    int
+        Number of total model parameters.
+
+    Raises
+    ------
+    ValueError
+        If unknown optimizer types.
+    """
+    params = 4
+    gradients = 4
+    param_copy = 4
+
+    divider = params + gradients + param_copy
+    if optim == "adam":
+        momentum = 4
+        variance = 4
+        something = 4
+        divider += momentum + variance + something
+    else:
+        raise ValueError(f'Unknown optimizer type "{optim}".')
+    return int(memory_gb * _1GB / divider)
+
+
+def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
     """Calculates number of hidden dimention neurons in 4 layer MLP with
     following architecture: in_len | h_dim | h_dim | in_len.
 
     Parameters
     ----------
-    memory_gb : int
-        Memory size that model should have in gigabytes.
+    n_params : int
+        Total number of model params.
     input_len : int
         Number of input neurons.
-    optim : Literal[&quot;adam&quot;, &quot;sgd&quot;]
-        Optimizer type. Allowed only adam or sgd.
 
     Returns
     -------
     int
         Number of neurons in single hidden layer.
     """
-    if optim == "sgd":
-        divider = 2
-    elif optim == "adam":
-        divider = 4
-    else:
-        raise ValueError(f'Unknown optimizer type "{optim}".')
     return int(
-        np.sqrt(memory_gb * _1GB / divider + input_len**2 + input_len + 1)
-        - input_len
-        + 1
+        np.sqrt(n_params + input_len**2 + input_len + 1) - input_len - 1
     )
 
 
 if __name__ == "__main__":
     in_features = 1
-    h_dim = _calculate_hidden_dim(
-        memory_gb=40, input_len=in_features, optim="adam"
-    )
+    n_params = _calculate_n_params(memory_gb=40, optim="adam")
+    h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
         batch_size=16,
         dataset_size=32,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
-        devices=3,
+        devices=2,
         accelerator="gpu",  # "cpu"  # DDPStrategy(),
-        strategy="fsdp_native",
+        strategy=DeepSpeedStrategy(),  # "fsdp_native",
     )
