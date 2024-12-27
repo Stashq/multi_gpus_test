@@ -95,14 +95,14 @@ def _calculate_n_params(
     """
     params = 4
     gradients = 4
-    param_copy = 4
+    signal_state = 4
 
-    divider = params + gradients + param_copy
+    divider = params + gradients + signal_state
     if optim == "adam":
+        param_copy = 4
         momentum = 4
         variance = 4
-        something = 4
-        divider += momentum + variance + something
+        divider += param_copy + momentum + variance
     else:
         raise ValueError(f'Unknown optimizer type "{optim}".')
     return int(memory_gb * _1GB / divider)
