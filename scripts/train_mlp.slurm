@@ -14,4 +14,9 @@
 module load PyTorch-Lightning/1.7.7-foss-2022a-CUDA-11.7.0
 export PYTHONPATH="/home/sc.uni-leipzig.de/zw82iqes/multi_gpus_test:$PYTHONPATH"
 
+# Set NCCL environment variables
+export NCCL_SOCKET_IFNAME=eth0        # Use the correct network interface
+export NCCL_USE_IPV6=0                # Disable IPv6 if not supported
+export NCCL_DEBUG=INFO                # Optional: Enable debug logging for NCCL
+
 srun python src/runs/train_mlp.py
