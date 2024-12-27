@@ -10,11 +10,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
-torch = "^1.12.0"
-pytorch-lightning = "^1.7.7"
-numpy = "1.22.3"
+pytorch-lightning = "^2.5.0.post0"
 deepspeed = "^0.16.2"
-
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^7.1.1"
@@ -24,7 +21,7 @@ isort = "^5.13.2"
 pytest = "^8.3.4"
 
 [tool.black]
-line-length = 75
+line-length = 80
 target-version = ['py310']
 include = '\.pyi?$'
 exclude = '''

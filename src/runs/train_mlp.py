@@ -48,7 +48,7 @@ def train_mlp(
     num_nodes: int,
     devices: int = 1,
     accelerator: str = "cpu",
-    strategy: Strategy | str | None = None,
+    strategy: Strategy | str = "auto",
 ) -> None:
     dm = VectorDataModule(
         vector_len=vector_len,
@@ -72,7 +72,8 @@ def train_mlp(
 
 
 def _calculate_n_params(
-    memory_gb: int | float, optim: Literal["adam", "sgd"]
+    memory_gb: int | float, optim: Literal["adam", "sgd"],
+    strategy_coef: int | float = 0
 ) -> int:
     """Calculates number of parameters that fits into memory.
 
@@ -82,6 +83,8 @@ def _calculate_n_params(
         Memory in gigabytes.
     optim : Literal["adam", "sgd"]
         Optimizer type. Allowed only adam or sgd.
+    strategy_coef : int | float
+        Coef added to divider, resulting from chosen strategy.
 
     Returns
     -------
@@ -95,9 +98,9 @@ def _calculate_n_params(
     """
     params = 4
     gradients = 4
-    signal_state = 4
+    signal_state = 0
 
-    divider = params + gradients + signal_state
+    divider = params + gradients + signal_state + strategy_coef
     if optim == "adam":
         param_copy = 4
         momentum = 4
@@ -131,7 +134,7 @@ def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
 
 if __name__ == "__main__":
     in_features = 1
-    n_params = _calculate_n_params(memory_gb=40, optim="adam")
+    n_params = _calculate_n_params(memory_gb=5.6, optim="adam")
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
@@ -139,7 +142,7 @@ if __name__ == "__main__":
         dataset_size=32,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
-        devices=2,
+        devices=1,
         accelerator="gpu",  # "cpu"  # DDPStrategy(),
         strategy=DeepSpeedStrategy(),  # "fsdp_native",
     )
