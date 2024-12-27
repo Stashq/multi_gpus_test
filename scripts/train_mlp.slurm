@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #SBATCH --job-name=multi_gpu_training
-#SBATCH --time=00:05:00
+#SBATCH --time=00:06:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --partition=clara
-#SBATCH --gres=gpu:v100:2
-#SBATCH --mem=64G
-#SBATCH --cpus-per-task=2
+#SBATCH --gres=gpu:v100:3
+#SBATCH --mem=96G
+#SBATCH --cpus-per-task=3
 #SBATCH -o /home/sc.uni-leipzig.de/sm589broe/logs/%x.out-%j
 # #SBATCH --mail-type=END
 
