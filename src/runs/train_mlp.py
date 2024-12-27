@@ -113,7 +113,7 @@ if __name__ == "__main__":
         dataset_size=32,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
-        devices=1,
+        devices=2,
         accelerator="gpu",  # "cpu"  # DDPStrategy(),
-        # strategy="fsdp_native",
+        strategy="fsdp_native",
     )
