@@ -46,7 +46,7 @@ def train_mlp(
     num_nodes: int,
     devices: int = 1,
     accelerator: str = "cpu",
-    strategy: str = "fsdp_native",
+    strategy: str | None = None,
 ) -> None:
     dm = VectorDataModule(
         vector_len=vector_len,
@@ -70,7 +70,7 @@ def train_mlp(
 
 
 def _calculate_hidden_dim(
-    memory_gb: int, input_len: int, optim: Literal["adam", "sgd"]
+    memory_gb: int | float, input_len: int, optim: Literal["adam", "sgd"]
 ) -> int:
     """Calculates number of hidden dimention neurons in 4 layer MLP with
     following architecture: in_len | h_dim | h_dim | in_len.
@@ -105,7 +105,7 @@ def _calculate_hidden_dim(
 if __name__ == "__main__":
     in_features = 1
     h_dim = _calculate_hidden_dim(
-        memory_gb=1, input_len=in_features, optim="adam"
+        memory_gb=40, input_len=in_features, optim="adam"
     )
     train_mlp(
         vector_len=in_features,
@@ -115,5 +115,5 @@ if __name__ == "__main__":
         num_nodes=1,
         devices=1,
         accelerator="gpu",  # "cpu"  # DDPStrategy(),
-        strategy="fsdp_native",
+        # strategy="fsdp_native",
     )

@@ -7,7 +7,7 @@
 #SBATCH --partition=clara
 #SBATCH --gres=gpu:v100:2
 #SBATCH --mem=64G
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=1
 #SBATCH -o /home/sc.uni-leipzig.de/sm589broe/logs/%x.out-%j
 # #SBATCH --mail-type=END
 
