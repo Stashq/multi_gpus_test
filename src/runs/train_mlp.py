@@ -137,8 +137,8 @@ if __name__ == "__main__":
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
-        batch_size=16,
-        dataset_size=32,
+        batch_size=2,
+        dataset_size=4,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
         devices=2,
