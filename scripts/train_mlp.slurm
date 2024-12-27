@@ -11,8 +11,8 @@
 #SBATCH -o /home/sc.uni-leipzig.de/sm589broe/logs/%x.out-%j
 # #SBATCH --mail-type=END
 
-module load PyTorch-Lightning/1.7.7-foss-2022a-CUDA-11.7.0
-export PYTHONPATH="/home/sc.uni-leipzig.de/zw82iqes/multi_gpus_test:$PYTHONPATH"
+# module load PyTorch-Lightning/1.7.7-foss-2022a-CUDA-11.7.0
+# export PYTHONPATH="/home/sc.uni-leipzig.de/zw82iqes/multi_gpus_test:$PYTHONPATH"
 source .venv/bin/activate
 
 # Set NCCL environment variables

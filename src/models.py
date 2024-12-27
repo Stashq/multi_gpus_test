@@ -4,9 +4,7 @@ from torch.optim import Optimizer
 
 
 class CNNModel(pl.LightningModule):
-    def __init__(
-        self, conv_kernels: list[int], kernel_size: int = 5
-    ) -> None:
+    def __init__(self, conv_kernels: list[int], kernel_size: int = 5) -> None:
         assert len(conv_kernels) > 1
         super().__init__()
         self.conv_kernels = conv_kernels
@@ -16,9 +14,7 @@ class CNNModel(pl.LightningModule):
 
     def setup_(self) -> None:
         layers = [
-            nn.Conv2d(
-                3, self.conv_kernels[0], kernel_size=self.kernel_size
-            )
+            nn.Conv2d(3, self.conv_kernels[0], kernel_size=self.kernel_size)
         ]
         layers += [
             nn.Conv2d(
@@ -52,9 +48,7 @@ class CNNModel(pl.LightningModule):
         x, _ = batch
         x_prim = self(x)
         loss: Tensor = self.loss_function(x, x_prim)
-        self.log(
-            "val_loss", loss, on_step=False, on_epoch=True, sync_dist=True
-        )
+        self.log("val_loss", loss, on_step=False, on_epoch=True, sync_dist=True)
         return loss
 
     def configure_optimizers(self) -> Optimizer:
@@ -101,9 +95,7 @@ class MLPModel(pl.LightningModule):
         x, _ = batch
         x_prim = self(x)
         loss: Tensor = self.loss_function(x, x_prim)
-        self.log(
-            "val_loss", loss, on_step=False, on_epoch=True, sync_dist=True
-        )
+        self.log("val_loss", loss, on_step=False, on_epoch=True, sync_dist=True)
         return loss
 
     def configure_optimizers(self) -> Optimizer:

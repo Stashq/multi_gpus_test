@@ -72,8 +72,9 @@ def train_mlp(
 
 
 def _calculate_n_params(
-    memory_gb: int | float, optim: Literal["adam", "sgd"],
-    strategy_coef: int | float = 0
+    memory_gb: int | float,
+    optim: Literal["adam", "sgd"],
+    strategy_coef: int | float = 0,
 ) -> int:
     """Calculates number of parameters that fits into memory.
 
@@ -127,14 +128,12 @@ def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
     int
         Number of neurons in single hidden layer.
     """
-    return int(
-        np.sqrt(n_params + input_len**2 + input_len + 1) - input_len - 1
-    )
+    return int(np.sqrt(n_params + input_len**2 + input_len + 1) - input_len - 1)
 
 
 if __name__ == "__main__":
     in_features = 1
-    n_params = _calculate_n_params(memory_gb=5.6, optim="adam")
+    n_params = _calculate_n_params(memory_gb=40, optim="adam")
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
@@ -142,7 +141,7 @@ if __name__ == "__main__":
         dataset_size=32,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
-        devices=1,
+        devices=2,
         accelerator="gpu",  # "cpu"  # DDPStrategy(),
         strategy=DeepSpeedStrategy(),  # "fsdp_native",
     )

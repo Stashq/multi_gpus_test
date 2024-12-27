@@ -5,9 +5,7 @@ from torch.utils.data import DataLoader, Dataset
 
 
 class VectorDataset(Dataset[Tensor]):
-    def __init__(
-        self, vector_len: int = 256, n_examples: int = 20
-    ) -> None:
+    def __init__(self, vector_len: int = 256, n_examples: int = 20) -> None:
         self.vector_len = vector_len
         self.n_examples = n_examples
 
