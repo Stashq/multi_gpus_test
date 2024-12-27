@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=multi_gpu_training
-#SBATCH --time=00:05:00
+#SBATCH --time=00:02:00
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --partition=clara
@@ -13,4 +13,4 @@
 
 module load PyTorch-Lightning/1.7.7-foss-2022a-CUDA-11.7.0
 
-srun python train.py
+srun python src/runs/train_mlp.py
