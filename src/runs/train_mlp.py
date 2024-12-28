@@ -47,7 +47,7 @@ def train_mlp(
     dataset_size: int,
     n_features: list[int],
     num_nodes: int,
-    devices: int = 1,
+    devices: list[int] | int | str = "auto",
     accelerator: str = "cpu",
     strategy: Strategy | str = "auto",
 ) -> None:
@@ -142,7 +142,7 @@ if __name__ == "__main__":
         dataset_size=4,
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
-        devices=2,
+        devices=[0, 1],
         accelerator="gpu",  # "cpu"
         strategy=FSDPStrategy()  # DeepSpeedStrategy(),  # "fsdp_native",
     )
