@@ -3,6 +3,7 @@ from typing import Literal
 import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import CSVLogger
+
 # from pytorch_lightning.strategies.deepspeed import DeepSpeedStrategy
 from pytorch_lightning.strategies.fsdp import FSDPStrategy
 from pytorch_lightning.strategies.strategy import Strategy
@@ -144,5 +145,9 @@ if __name__ == "__main__":
         num_nodes=1,
         devices=[0, 1],
         accelerator="gpu",  # "cpu"
-        strategy=FSDPStrategy()  # DeepSpeedStrategy(),  # "fsdp_native",
+        strategy=FSDPStrategy(
+            auto_wrap_policy="size_based",  # type: ignore[arg-type]
+            min_num_params=1e6,
+        ),
+        # DeepSpeedStrategy(),  # "fsdp_native",
     )
