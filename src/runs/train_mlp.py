@@ -133,7 +133,7 @@ def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
 
 if __name__ == "__main__":
     in_features = 1
-    n_params = _calculate_n_params(memory_gb=40, optim="adam")
+    n_params = _calculate_n_params(memory_gb=33, optim="adam")
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
