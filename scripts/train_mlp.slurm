@@ -17,8 +17,8 @@ source .venv/bin/activate
 module load CUDA/12.4.0
 
 # Set NCCL environment variables
-export NCCL_SOCKET_IFNAME=eth0        # Use the correct network interface
-export NCCL_USE_IPV6=0                # Disable IPv6 if not supported
+# export NCCL_SOCKET_IFNAME=eth0        # Use the correct network interface
+# export NCCL_USE_IPV6=0                # Disable IPv6 if not supported
 export NCCL_DEBUG=INFO                # Optional: Enable debug logging for NCCL
 
 srun python src/runs/train_mlp.py
