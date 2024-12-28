@@ -14,6 +14,7 @@
 # module load PyTorch-Lightning/1.7.7-foss-2022a-CUDA-11.7.0
 # export PYTHONPATH="/home/sc.uni-leipzig.de/zw82iqes/multi_gpus_test:$PYTHONPATH"
 source .venv/bin/activate
+module load CUDA/12.4.0
 
 # Set NCCL environment variables
 export NCCL_SOCKET_IFNAME=eth0        # Use the correct network interface
