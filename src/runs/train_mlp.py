@@ -3,7 +3,8 @@ from typing import Literal
 import numpy as np
 from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import CSVLogger
-from pytorch_lightning.strategies.deepspeed import DeepSpeedStrategy
+# from pytorch_lightning.strategies.deepspeed import DeepSpeedStrategy
+from pytorch_lightning.strategies.fsdp import FSDPStrategy
 from pytorch_lightning.strategies.strategy import Strategy
 
 from src.data_modules.vector_data import VectorDataModule
@@ -133,7 +134,7 @@ def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
 
 if __name__ == "__main__":
     in_features = 1
-    n_params = _calculate_n_params(memory_gb=33, optim="adam")
+    n_params = _calculate_n_params(memory_gb=40, optim="adam")
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
     train_mlp(
         vector_len=in_features,
@@ -142,6 +143,6 @@ if __name__ == "__main__":
         n_features=[in_features, h_dim, h_dim, in_features],
         num_nodes=1,
         devices=2,
-        accelerator="gpu",  # "cpu"  # DDPStrategy(),
-        strategy=DeepSpeedStrategy(),  # "fsdp_native",
+        accelerator="gpu",  # "cpu"
+        strategy=FSDPStrategy()  # DeepSpeedStrategy(),  # "fsdp_native",
     )
