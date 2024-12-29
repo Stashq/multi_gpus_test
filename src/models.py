@@ -62,7 +62,6 @@ class MLPBlock(nn.Module):
         assert len(n_features) > 1
         super().__init__()
         self.n_features = n_features
-        self.loss_function = nn.MSELoss()
         self.setup_()
 
     def setup_(self) -> None:
@@ -85,6 +84,7 @@ class MLPModel(pl.LightningModule):
         super().__init__()
         self.encoder = MLPBlock(n_features)
         self.decoder = MLPBlock(n_features)
+        self.loss_function = nn.MSELoss()
 
     def forward(self, x: Tensor) -> Tensor:
         x = self.encoder(x)
