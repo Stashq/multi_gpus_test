@@ -5,11 +5,12 @@ from pytorch_lightning import Trainer
 from pytorch_lightning.loggers import CSVLogger
 
 # from pytorch_lightning.strategies.deepspeed import DeepSpeedStrategy
-# from pytorch_lightning.strategies.fsdp import FSDPStrategy
+from pytorch_lightning.strategies.fsdp import FSDPStrategy
 from pytorch_lightning.strategies.strategy import Strategy
+from torch import nn
 
 from src.data_modules.vector_data import VectorDataModule
-from src.models import MLPModel
+from src.models import MLPBlock, MLPModel
 
 _1GB = 1073741824
 
@@ -116,7 +117,8 @@ def _calculate_n_params(
 
 def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
     """Calculates number of hidden dimention neurons in 4 layer MLP with
-    following architecture: in_len | h_dim | h_dim | in_len.
+    following architecture: block | block, where block:
+    in_len | h_dim | h_dim | in_len.
 
     Parameters
     ----------
@@ -130,13 +132,20 @@ def _calculate_hidden_dim(n_params: int, input_len: int) -> int:
     int
         Number of neurons in single hidden layer.
     """
-    return int(np.sqrt(n_params + input_len**2 + input_len + 1) - input_len - 1)
+    return int(
+        (
+            np.sqrt(2) * np.sqrt(n_params + input_len**2 + input_len + 1)
+            - 2 * (input_len + 1)
+        )
+        / 2
+    )
 
 
 if __name__ == "__main__":
     in_features = 1
     n_params = _calculate_n_params(memory_gb=40, optim="adam")
     h_dim = _calculate_hidden_dim(n_params=n_params, input_len=in_features)
+    wrap_policy: set[type[nn.Module]] = {MLPBlock}
     train_mlp(
         vector_len=in_features,
         batch_size=2,
@@ -145,10 +154,11 @@ if __name__ == "__main__":
         num_nodes=1,
         devices=[0, 1],
         accelerator="gpu",  # "cpu"
-        strategy="fsdp",  # FSDPStrategy(
-        # accelerator='cuda',
-        # cpu_offload=True,
-        # auto_wrap_policy=wrap_policy,
-        # mixed_precision=mixed_precision_policy
+        strategy=FSDPStrategy(
+            accelerator="gpu",
+            cpu_offload=True,
+            auto_wrap_policy=wrap_policy,
+            # mixed_precision=mixed_precision_policy
+        ),
+        # DeepSpeedStrategy(),  # "fsdp_native",
     )
-    # DeepSpeedStrategy(),  # "fsdp_native",

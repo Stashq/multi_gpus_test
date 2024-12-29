@@ -57,8 +57,8 @@ class CNNModel(pl.LightningModule):
         return optimizer
 
 
-class MLPModel(pl.LightningModule):
-    def __init__(self, n_features: list[int]):
+class MLPBlock(nn.Module):
+    def __init__(self, n_features: list[int]) -> None:
         assert len(n_features) > 1
         super().__init__()
         self.n_features = n_features
@@ -76,6 +76,19 @@ class MLPModel(pl.LightningModule):
     def forward(self, x: Tensor) -> Tensor:
         for layer in self.layers:
             x = layer(x)
+        return x
+
+
+class MLPModel(pl.LightningModule):
+    def __init__(self, n_features: list[int]) -> None:
+        assert len(n_features) > 1
+        super().__init__()
+        self.encoder = MLPBlock(n_features)
+        self.decoder = MLPBlock(n_features)
+
+    def forward(self, x: Tensor) -> Tensor:
+        x = self.encoder(x)
+        x = self.decoder(x)
         return x
 
     def training_step(self, batch: Tensor, batch_idx: int) -> Tensor:
