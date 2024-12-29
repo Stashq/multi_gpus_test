@@ -155,7 +155,6 @@ if __name__ == "__main__":
         devices=[0, 1],
         accelerator="gpu",  # "cpu"
         strategy=FSDPStrategy(
-            accelerator="gpu",
             cpu_offload=True,
             auto_wrap_policy=wrap_policy,
             # mixed_precision=mixed_precision_policy
